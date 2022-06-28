@@ -1,0 +1,8 @@
+imutils == 0.5.4
+scipy == 1.7.3
+numpy == 1.16.6
+
+# without gpu, require dependencies as below
+opencv-python == 4.5.4
+opencv-python-headless == 4.5.4
+opencv-contrib-python-headless == 4.5.4

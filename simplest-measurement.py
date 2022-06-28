@@ -159,7 +159,7 @@ while cam.isOpened():
         cv2.imshow('Measurment-result', frame)
     
     print(f"Current Frame: {counter}")
-    print(f"Current Process Time: {total_process_time}")
+    print(f"Current Process Time: {total_process_time*1000} ms")
     print(f"Current FPS: {fps}")
 
     if cv2.waitKey(1) & 0xFF == ord('q'):

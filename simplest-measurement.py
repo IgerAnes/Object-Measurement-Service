@@ -35,6 +35,7 @@ counter = 0
 current_time = 0
 fps = 0
 previous_time = 0
+total_process_time = 0
 # setup camera height and width
 cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
 cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
@@ -46,7 +47,6 @@ while cam.isOpened():
     
     # send frame with counter
     counter += 1
-    current_time = time.time()
     frame = imutils.rotate(frame, 180)
     origin_data = frame
     
@@ -139,7 +139,9 @@ while cam.isOpened():
                         cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255,255,255), 2)
             
             # cv2.imwrite("measure-result-image.png", origImage)
-        fps = 1 / (current_time - previous_time)
+        current_time = time.time()
+        total_process_time = (current_time - previous_time)
+        fps = 1 / total_process_time
         cv2.putText(origImage, f"Counter: {counter}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 
                         1, (50, 0, 255), 2 , cv2.LINE_AA)
         cv2.putText(origImage, f"FPS: {fps}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
@@ -147,14 +149,18 @@ while cam.isOpened():
             
         cv2.imshow('Measurment-result', origImage)
     except:
-        fps = 1 / (current_time - previous_time)
+        current_time = time.time()
+        total_process_time = (current_time - previous_time)
+        fps = 1 / total_process_time
         cv2.putText(frame, f"Counter: {counter}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 
                         1, (50, 0, 255), 2 , cv2.LINE_AA)
         cv2.putText(frame, f"FPS: {fps}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 
                         1, (50, 0, 255), 2 , cv2.LINE_AA)
         cv2.imshow('Measurment-result', frame)
     
-    print(fps)
+    print(f"Current Frame: {counter}")
+    print(f"Current Process Time: {total_process_time}")
+    print(f"Current FPS: {fps}")
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

@@ -7,17 +7,25 @@ import imutils
 from scipy.spatial import distance as dist
 import time
 import math
-import os
+import argparse
 
+
+# Add arg by user
+parser = argparse.ArgumentParser()
+parser.add_argument("--deviceos", "-do", default="Windows", type=str, required=False, help="your local device OS")
+args = parser.parse_args()
 
 # setup opencv parameter
 # PIXELSPERMETRIC = None
-PIXELSPERMETRIC = 6.5549745
-POINTX = np.array([876, 1034])
-POINTY = np.array([738, 908])
-ORIGINPOINT = np.array([744, 1038])
+PIXELSPERMETRIC =  5.3004629 # 6.5549745
+POINTX =  np.array([138, 688]) # np.array([876, 1034])
+POINTY =  np.array([32, 580]) # np.array([738, 908])
+ORIGINPOINT = np.array([34, 688]) # np.array([744, 1038])
 CALIBRATEVALUE = 5*PIXELSPERMETRIC
-ROIAREA = np.array([[[744 + CALIBRATEVALUE, 1038 - CALIBRATEVALUE], [1920, 1002 - CALIBRATEVALUE], [1920, 0], [696 + CALIBRATEVALUE, 0]]], dtype=np.int32)
+ROIAREA = np.array([[[34 + CALIBRATEVALUE, 688 - CALIBRATEVALUE], [1280, 688 - CALIBRATEVALUE], [1280, 0], [21 + CALIBRATEVALUE, 0]]], dtype=np.int32)
+#ROIAREA = np.array([[[400, 650], [1280, 650], [1280, 0], [400, 0]]], dtype=np.int32)
+
+
 
 def systemTime():
     now = datetime.now()
@@ -27,7 +35,11 @@ def systemTime():
 
 
 # DSHOW parameter is for windows only, if you use linux, change to CAP_V4L, CAP_V4L2, CAP_FFMPEG, CAP_GSTREAMER
-cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+if (args.deviceos == "Windows"):
+    cam = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+elif (args.deviceos == "Linux"):
+    cam = cv2.VideoCapture(0, cv2.CAP_V4L2)
+
 if cam.isOpened():
     print("[Camera] Succeed to get webcam data.")
 
@@ -37,8 +49,8 @@ fps = 0
 previous_time = 0
 total_process_time = 0
 # setup camera height and width
-cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+cam.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
 cam.set(cv2.CAP_PROP_FPS, 60)
 cam.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
 
@@ -77,7 +89,8 @@ while cam.isOpened():
 
         # Sort the contours from left-to-right and initilaize the 'pixils per metric' calibration value
         (contourFinder, _) = contours.sort_contours(contourFinder)
-
+        # origImage = origin_data.copy()
+        
         for c in contourFinder:
             # check if contour is large enough, otherwise ignore it
             if cv2.contourArea(c) < 100:
@@ -134,9 +147,9 @@ while cam.isOpened():
             
             # Draw object-size on image
             cv2.putText(origImage, "{:.4f}mm".format(dimA), (int(tlblX - 15), int(tlblY - 10)), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255,255,255), 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (10,50,255), 2)
             cv2.putText(origImage, "{:.4f}mm".format(dimB), (int(tltrX + 10), int(tltrY)), 
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (255,255,255), 2)
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.65, (10,50,255), 2)
             
             # cv2.imwrite("measure-result-image.png", origImage)
         current_time = time.time()
